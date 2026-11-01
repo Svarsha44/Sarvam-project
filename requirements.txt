@@ -1,0 +1,5 @@
+sarvamai
+python-dotenv
+flask
+pillow
+httpx
