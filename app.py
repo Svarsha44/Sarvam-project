@@ -1,5 +1,6 @@
 import os
 import sys
+import tempfile
 from pathlib import Path
 from flask import Flask, render_template_string, request, jsonify, send_from_directory
 from dotenv import load_dotenv
@@ -22,11 +23,14 @@ from story_narrator import (
 from sarvamai import SarvamAI
 
 app = Flask(__name__)
-app.config["UPLOAD_FOLDER"] = "uploads"
-app.config["AUDIO_FOLDER"] = "audio_outputs"
 
-Path(app.config["UPLOAD_FOLDER"]).mkdir(exist_ok=True)
-Path(app.config["AUDIO_FOLDER"]).mkdir(exist_ok=True)
+# Use /tmp on Vercel Serverless (read-only filesystem workaround)
+TEMP_DIR = tempfile.gettempdir()
+app.config["UPLOAD_FOLDER"] = os.path.join(TEMP_DIR, "sarvam_uploads")
+app.config["AUDIO_FOLDER"] = os.path.join(TEMP_DIR, "sarvam_audio_outputs")
+
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+os.makedirs(app.config["AUDIO_FOLDER"], exist_ok=True)
 
 # Curated Heritage Library Data
 HERITAGE_LIBRARY = [
